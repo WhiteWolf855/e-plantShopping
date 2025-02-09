@@ -15,26 +15,44 @@ export const cartSlice = createSlice({
       }
     },
     removeItem: (state, action) => {
+      state.items = state.items.filter(item => item.name !== action.payload.name);
+    },
+    updateQuantity: (state, action) => {
       const item = state.items.find(item => item.name === action.payload.name);
       if (item) {
-        if (item.quantity > 1) {
-          item.quantity -= 1; // Reduce quantity instead of removing immediately
+        if (action.payload.quantity > 0) {
+          item.quantity = action.payload.quantity;
         } else {
           state.items = state.items.filter(i => i.name !== action.payload.name);
         }
       }
     },
-    updateQuantity: (state, action) => {
-      const item = state.items.find(item => item.name === action.payload.name);
-      if (item) {
-        item.quantity = action.payload.quantity;
-      }
-    },
     clearCart: (state) => {
-      state.items = []; // New reducer to empty the cart
+      state.items = [];
     }
   },
 });
+
+// Selector to calculate the total cost of all items in the cart
+export const calculateTotalAmount = (state) => 
+  state.cart.items.reduce((total, item) => total + item.quantity * item.cost, 0);
+
+// Selector to calculate total quantity of all items in the cart
+export const calculateTotalQuantity = (state) => 
+  state.cart.items.reduce((total, item) => total + item.quantity, 0);
+
+// Function to calculate the subtotal for each plant type
+export const calculateItemSubtotal = (item) => item.quantity * item.cost;
+
+// Handle "Continue Shopping"
+export const handleContinueShopping = (navigate) => {
+  navigate('/'); // Adjust the path as needed
+};
+
+// Placeholder checkout function
+export const handleCheckoutShopping = () => {
+  alert('Functionality to be added for future reference');
+};
 
 export const { addItem, removeItem, updateQuantity, clearCart } = cartSlice.actions;
 export default cartSlice.reducer;
